@@ -1,0 +1,25 @@
+*&---------------------------------------------------------------------*
+*& Report  ZABAP02
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  ZABAP02.
+
+*انشاء انواع بينات محلية
+
+TYPES: loc_dec TYPE P DECIMALS 2.
+
+* تعريف متغيرات
+
+DATA: opernad1 TYPE loc_dec VALUE 5 ,
+      opernad2 TYPE loc_dec VALUE 4 ,
+      result TYPE fl_price .
+
+START-OF-SELECTION .
+
+result = opernad1 * opernad2 .
+
+WRITE: result .
