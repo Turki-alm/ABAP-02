@@ -1,0 +1,31 @@
+*&---------------------------------------------------------------------*
+*& Report  ZABAP03
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  ZABAP03.
+
+*تعريف نوع لوكل داتا عشان الاوبجكت
+
+TYPES : BEGIN OF tr_persone ,
+        name(20) TYPE C ,
+        age TYPE I ,
+        count(10) TYPE C ,
+        END OF tr_persone .
+
+* نوع بينات جديد للتعريف الستركتر
+
+DATA : st_persone TYPE tr_persone .
+
+START-OF-SELECTION .
+
+st_persone-name = 'toto' .
+st_persone-age = 23 .
+st_persone-count = 'ksa' .
+
+WRITE : 'name is ' , st_persone-name ,
+       / 'age is ' , st_persone-age ,
+       / 'countray' , st_persone-Count .
