@@ -1,0 +1,23 @@
+*&---------------------------------------------------------------------*
+*& Report  ZABAP04
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  ZABAP04.
+
+* تعريف بينات الستركتر في القلوبل
+
+data st_scarr TYPE scarr .
+
+* امر الاستعلام
+START-OF-SELECTION .
+
+SELECT SINGLE * INTO CORRESPONDING FIELDS OF st_scarr
+from scarr WHERE carrid = 'LH' .
+
+WRITE : st_scarr-CARRID ,
+        st_scarr-CARRNAME ,
+        st_scarr-URL .
