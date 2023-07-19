@@ -1,0 +1,69 @@
+*&---------------------------------------------------------------------*
+*& Report  ZABAP05
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  ZABAP05.
+
+* تعريف نوع محلي من البيانات لاستخدامه في الجدول
+
+TYPES : BEGIN OF tu_persone ,
+        name(10) TYPE C ,
+        AGE TYPE I ,
+        COUNT(10) TYPE C ,
+        END OF tu_persone .
+
+* تعريف البيانات
+
+DATA : it_persone TYPE TABLE OF tu_persone ,
+* نوع البيانات مثل المستخد في ال it_persone
+        WA_persone LIKE LINE OF it_persone .
+
+
+START-OF-SELECTION .
+* فض المنطقه الي حقت التعديل
+CLEAR WA_persone .
+WA_persone-name = 'toto' .
+WA_persone-AGE = 23 .
+WA_persone-COUNT = 'KSA' .
+* انقل البيانات من منطقه العمل الا الجدول
+APPEND WA_persone to it_persone .
+
+* الحقل الثاني او الصف
+
+CLEAR WA_persone .
+WA_persone-name = 'tu' .
+WA_persone-AGE = 21 .
+WA_persone-COUNT = 'ku' .
+* انقل البيانات من منطقه العمل الا الجدول
+APPEND WA_persone to it_persone .
+
+* 3
+
+CLEAR WA_persone .
+WA_persone-name = 'tof' .
+WA_persone-AGE = 29 .
+WA_persone-COUNT = 'Kgg' .
+* انقل البيانات من منطقه العمل الا الجدول
+APPEND WA_persone to it_persone .
+
+* 4
+
+CLEAR WA_persone .
+WA_persone-name = 'tosk' .
+WA_persone-AGE = 12 .
+WA_persone-COUNT = 'Kss' .
+* انقل البيانات من منطقه العمل الا الجدول
+APPEND WA_persone to it_persone .
+
+* لطباعه عبر LOOP اسهل وافضل
+
+LOOP AT it_persone INTO WA_persone .
+WRITE : / WA_persone-name ,
+         WA_persone-AGE ,
+         WA_persone-COUNT .
+
+ENDLOOP.
