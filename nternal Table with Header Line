@@ -1,0 +1,63 @@
+*&---------------------------------------------------------------------*
+*& Report  ZABAP05
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  ZABAP08.
+
+* تعريف نوع محلي من البيانات لاستخدامه في الجدول
+
+TYPES : BEGIN OF tu_persone ,
+        name(10) TYPE C ,
+        AGE TYPE I ,
+        COUNT(10) TYPE C ,
+        END OF tu_persone .
+
+* تعريف البيانات مع الهيييدر
+
+DATA : t_persone TYPE TABLE OF tu_persone WITH HEADER LINE .
+
+
+START-OF-SELECTION .
+
+* الهيدر مايحتاج work area ف نستخدمه دايركت
+
+CLEAR t_persone .
+t_persone-name = 'toto' .
+t_persone-AGE = 23 .
+t_persone-COUNT = 'SS' .
+* انقل البيانات من منطقه العمل الا الجدول
+APPEND t_persone .
+
+
+CLEAR t_persone .
+t_persone-name = 'tu' .
+t_persone-AGE = 21 .
+t_persone-COUNT = 'ku' .
+* انقل البيانات من منطقه العمل الا الجدول
+APPEND t_persone .
+
+* 3
+
+CLEAR t_persone .
+t_persone-name = 'tof' .
+t_persone-AGE = 29 .
+t_persone-COUNT = 'Kgg' .
+* انقل البيانات من منطقه العمل الا الجدول
+APPEND t_persone .
+
+* 4
+
+
+
+* لطباعه عبر LOOP اسهل وافضل
+
+LOOP AT t_persone .
+WRITE : / t_persone-name ,
+         t_persone-AGE ,
+         t_persone-COUNT .
+
+ENDLOOP.
