@@ -1,0 +1,46 @@
+
+*&---------------------------------------------------------------------*
+*& Report  ZABAP09
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  ZABAP09.
+
+* تعريف نوع من البيانات ل لطباعه
+DATA : IT_SFLIGHT TYPE TABLE OF SFLIGHT ,
+      WA_SFLIGHT LIKE LINE OF IT_SFLIGHT .
+DATA : STRDATE(10) TYPE C .
+
+* عمل برميتر للاستعلام لقاعده بيانات sflight
+* الاسم يجيب ان يقل عن 8 احرف
+PARAMETERS pa_id LIKE SFLIGHT-CARRID .
+
+START-OF-SELECTION .
+
+SELECT * INTO CORRESPONDING FIELDS OF TABLE IT_SFLIGHT
+* IT IS PARMATERS
+FROM SFLIGHT WHERE CARRID = pa_id .
+
+IF  IT_SFLIGHT IS NOT INITIAL .
+
+
+LOOP AT IT_SFLIGHT INTO WA_SFLIGHT .
+
+* اكتب الناتج هنا
+
+WRITE : WA_SFLIGHT-FLDATE TO STRDATE .
+
+WRITE : / WA_SFLIGHT-CARRID ,
+          WA_SFLIGHT-CONNID ,
+          STRDATE .
+
+
+ENDLOOP.
+
+
+ELSE.
+WRITE : 'no data flund' .
+ENDIF.
