@@ -1,0 +1,47 @@
+
+
+*&---------------------------------------------------------------------*
+*& Report  ZABAP14
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  ZABAP14.
+*
+*DATA : V_HELLO(10) TYPE C VALUE 'HELLO' ,
+*      v_welcome(20) TYPE C VALUE 'WELCOME IN SAP ' ,
+*      V_RESULT(40) TYPE C .
+*
+*PARAMETERS : PA_NAME(20) TYPE C .
+*
+** هنا يبدا معالجه النصوص و الكلمات
+** CONCATENATE  يعني وصل
+** SEPARATED BY SPACE يعني افصلهها بمبسافه
+** RESPECTING BLANKS يعني حط خطوط بعيده بينها
+*
+*CONCATENATE : V_HELLO  PA_NAME V_WELCOME INTO V_RESULT SEPARATED BY SPACE .
+*
+*WRITE : V_RESULT .
+
+TYPES : BEGIN OF ty_word ,
+        word(10) TYPE C ,
+        END OF ty_word .
+
+DATA : it_word TYPE TABLE OF ty_word ,
+       wa_word LIKE LINE OF it_word .
+
+PARAMETERS : pa_word(30) type c ,
+              pa_del(1) type c .
+
+
+* افصل هنا
+
+SPLIT pa_word at pa_del INTO TABLE it_word .
+
+LOOP AT  it_word INTO wa_word .
+
+WRITE : / wa_word-word .
+
+ENDLOOP.
