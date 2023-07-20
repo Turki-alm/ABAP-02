@@ -1,0 +1,222 @@
+*&---------------------------------------------------------------------*
+*& Report  ZABAP29
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+INCLUDE ZABAP29_TOP                             .    " global Data
+
+
+* طريقه عرض
+SELECTION-SCREEN BEGIN OF BLOCK B1 WITH FRAME TITLE TEXT-001 .
+SELECT-OPTIONS : SO_ID FOR SFLIGHT-CARRID .
+SELECTION-SCREEN END OF BLOCK B1 .
+
+
+START-OF-SELECTION .
+PERFORM GET_DATA .
+
+PERFORM PROCESS_DATA1.
+
+PERFORM DISPLAY_DATA .
+
+
+* INCLUDE ZABAP29_O01                             .  " PBO-Modules
+* INCLUDE ZABAP29_I01                             .  " PAI-Modules
+* INCLUDE ZABAP29_F01                             .  " FORM-Routines
+
+INCLUDE ZABAP29_F01.
+
+INCLUDE ZABAP29_PROCESS_DATAF01.
+
+
+
+كل ال SUBRTINUE المستخدم 
+*----------------------------------------------------------------------*
+***INCLUDE ZABAP29_F01 .
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Form  GET_DATA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM GET_DATA .
+
+* الساب روتين ذا يحتوي على
+* يروح للجداول وبناء على مدخل SO_ID يبحث
+SELECT * INTO CORRESPONDING FIELDS OF TABLE IT_MAIN
+FROM SFLIGHT WHERE CARRID IN SO_ID .
+
+
+IF IT_MAIN IS NOT INITIAL .
+SELECT * INTO CORRESPONDING FIELDS OF TABLE IT_SCARR
+FROM SCARR FOR ALL ENTRIES IN IT_MAIN
+WHERE CARRID = IT_MAIN-CARRID .
+
+ENDIF.
+
+ENDFORM.                    " GET_DATA
+*&---------------------------------------------------------------------*
+*&      Form  PROCESS_DATA1
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM PROCESS_DATA1 .
+
+* الساب روتين هنا انشئ بيانات وامر بالقراءه
+
+DATA INDX LIKE SY-TABIX .
+LOOP AT IT_MAIN INTO WA_MAIN .
+INDX = SY-TABIX .
+CLEAR WA_SCARR .
+READ TABLE IT_SCARR INTO WA_SCARR WITH KEY CARRID = WA_MAIN-CARRID .
+
+WA_MAIN-CARRNAME = WA_SCARR-CARRNAME .
+MODIFY IT_MAIN FROM WA_MAIN INDEX INDX .
+ENDLOOP.
+
+ENDFORM.                    " PROCESS_DATA1
+*&---------------------------------------------------------------------*
+*&      Form  DISPLAY_DATA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM DISPLAY_DATA .
+
+PERFORM SFT_FACT CHANGING IT_FACT .
+
+CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+EXPORTING
+*   I_INTERFACE_CHECK                 = ' '
+*   I_BYPASSING_BUFFER                = ' '
+*   I_BUFFER_ACTIVE                   = ' '
+*   I_CALLBACK_PROGRAM                = ' '
+*   I_CALLBACK_PF_STATUS_SET          = ' '
+*   I_CALLBACK_USER_COMMAND           = ' '
+*   I_CALLBACK_TOP_OF_PAGE            = ' '
+*   I_CALLBACK_HTML_TOP_OF_PAGE       = ' '
+*   I_CALLBACK_HTML_END_OF_LIST       = ' '
+*   I_STRUCTURE_NAME                  =
+*   I_BACKGROUND_ID                   = ' '
+*   I_GRID_TITLE                      =
+*   I_GRID_SETTINGS                   =
+*   IS_LAYOUT                         =
+ IT_FIELDCAT                       = IT_FACT
+*   IT_EXCLUDING                      =
+*   IT_SPECIAL_GROUPS                 =
+*   IT_SORT                           =
+*   IT_FILTER                         =
+*   IS_SEL_HIDE                       =
+*   I_DEFAULT                         = 'X'
+*   I_SAVE                            = ' '
+*   IS_VARIANT                        =
+*   IT_EVENTS                         =
+*   IT_EVENT_EXIT                     =
+*   IS_PRINT                          =
+*   IS_REPREP_ID                      =
+*   I_SCREEN_START_COLUMN             = 0
+*   I_SCREEN_START_LINE               = 0
+*   I_SCREEN_END_COLUMN               = 0
+*   I_SCREEN_END_LINE                 = 0
+*   I_HTML_HEIGHT_TOP                 = 0
+*   I_HTML_HEIGHT_END                 = 0
+*   IT_ALV_GRAPHICS                   =
+*   IT_HYPERLINK                      =
+*   IT_ADD_FIELDCAT                   =
+*   IT_EXCEPT_QINFO                   =
+*   IR_SALV_FULLSCREEN_ADAPTER        =
+* IMPORTING
+*   E_EXIT_CAUSED_BY_CALLER           =
+*   ES_EXIT_CAUSED_BY_USER            =
+  TABLES
+    T_OUTTAB                          = IT_MAIN
+* EXCEPTIONS
+*   PROGRAM_ERROR                     = 1
+*   OTHERS                            = 2
+          .
+IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+ENDIF.
+
+
+ENDFORM.                    " DISPLAY_DATA
+*&---------------------------------------------------------------------*
+*&      Form  SFT_FACT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      <--P_IT_FACT  text
+*----------------------------------------------------------------------*
+FORM SFT_FACT  CHANGING P_IT_FACT TYPE SLIS_T_FIELDCAT_ALV .
+
+DATA : W_FCAT LIKE LINE OF  P_IT_FACT.
+
+CLEAR W_FCAT.
+
+W_FCAT-FIELDNAME = 'CARRID' .
+W_FCAT-SELTEXT_L = 'CARRIER ID'.
+W_FCAT-OUTPUTLEN = 10.
+APPEND W_FCAT TO P_IT_FACT .
+
+CLEAR W_FCAT.
+
+W_FCAT-FIELDNAME = 'CARRNAME'.
+W_FCAT-SELTEXT_L = 'CARRIER NAME ' .
+W_FCAT-OUTPUTLEN = 30.
+APPEND W_FCAT TO P_IT_FACT .
+
+CLEAR W_FCAT.
+
+W_FCAT-FIELDNAME = 'CONNID' .
+W_FCAT-SELTEXT_L = 'CONNECTION NUMBER'.
+W_FCAT-OUTPUTLEN = 10 .
+APPEND W_FCAT TO P_IT_FACT .
+
+CLEAR W_FCAT.
+
+W_FCAT-FIELDNAME = 'FLDATE'.
+W_FCAT-SELTEXT_L = 'FLIGHT DATE'.
+W_FCAT-OUTPUTLEN = 10.
+APPEND W_FCAT TO P_IT_FACT .
+
+ENDFORM.                    " SFT_FACT
+
+
+
+
+البرنامج 
+*&---------------------------------------------------------------------*
+*& Include ZABAP29_TOP                                       Report ZABAP29
+*&
+*&---------------------------------------------------------------------*
+
+REPORT   ZABAP29.
+TYPE-POOLS : SLIS .
+
+TABLES : SFLIGHT .
+* تعريف نوع للاستخدامه
+TYPES : BEGIN OF TY_MAIN ,
+        CARRID LIKE SFLIGHT-CARRID ,
+        CARRNAME LIKE SCARR-CARRNAME ,
+        CONNID LIKE SFLIGHT-CONNID ,
+        FLDATE LIKE SFLIGHT-FLDATE ,
+        END OF TY_MAIN .
+
+DATA : IT_MAIN TYPE TABLE OF TY_MAIN ,
+       WA_MAIN LIKE LINE OF IT_MAIN .
+
+DATA : IT_SCARR TYPE TABLE OF SCARR ,
+       WA_SCARR LIKE LINE OF IT_SCARR .
+
+DATA: IT_FACT TYPE  SLIS_T_FIELDC
