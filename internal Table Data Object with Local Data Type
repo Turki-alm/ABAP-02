@@ -1,0 +1,93 @@
+REPORT  ZABAP07.
+
+TYPES : BEGIN OF TY_MAIN .
+* تستخدم في استعراض كل الجدول
+      INCLUDE STRUCTURE SFLIGHT .
+
+* هنا تعريف نوع من انواع البيانات للمحتويات الجداول
+
+TYPES : CARRNAME LIKE SCARR-CARRNAME ,
+        COUNTRYFR LIKE SPFLI-COUNTRYFR  ,
+        COUNTRYTO LIKE SPFLI-COUNTRYTO ,
+        END OF TY_MAIN .
+
+* تتعريف متغيرات واعطائها نوع من انواع البيانات
+
+DATA : IT_MAIN TYPE TABLE OF TY_MAIN ,
+* انشاء ال ورك اريا لحفظ القيم من الحقول بشكل مؤقت والعمل عليها دون استدعاء الجدول الداخلي وتائثره
+* هي افضل حل للسهوله الصيانه
+       WA_MAIN LIKE LINE OF IT_MAIN .
+
+DATA : IT_SCARR TYPE TABLE OF SCARR ,
+       WA_SCARR LIKE LINE OF IT_SCARR ,
+       IT_SPFLI TYPE TABLE OF SPFLI ,
+       WA_SPFLI LIKE LINE OF IT_SPFLI .
+
+* فهرسه للجدول الذي يتم العمل عليه
+DATA : INDEXLOOP LIKE SY-TABIX .
+
+START-OF-SELECTION .
+
+* جملة استعلام للحقول التي في الجدول الداخلي ومطابقتها مع قاعده البيانات لحفظ نفس البيانات
+
+SELECT * INTO CORRESPONDING FIELDS OF TABLE IT_MAIN
+FROM SFLIGHT WHERE CARRID = 'LH' .
+
+* اذا كان الجدول غير موجود او غير معطى لقيمه اختر
+IF IT_MAIN IS NOT INITIAL .
+SELECT * INTO CORRESPONDING FIELDS OF TABLE IT_SCARR
+FROM SCARR FOR ALL ENTRIES IN IT_MAIN
+WHERE CARRID = IT_MAIN-CARRID .
+
+SELECT * INTO CORRESPONDING FIELDS OF TABLE IT_SPFLI
+FROM SPFLI FOR ALL ENTRIES IN IT_MAIN
+WHERE CARRID = IT_MAIN-CARRID AND
+      CONNID = IT_MAIN-CONNID .
+
+
+
+
+
+ENDIF .
+
+*عمل loop لتنفيذ جميع العمليات في الجدول الداخلي وحفظها في الورك اريا
+LOOP AT IT_MAIN INTO WA_MAIN .
+INDEXLOOP = SY-TABIX .
+
+CLEAR WA_SCARR .
+READ TABLE IT_SCARR INTO WA_SCARR WITH KEY CARRID = WA_MAIN-CARRID .
+* اذا العمليه تنفذت بنجاح نفذ الاتي
+IF SY-SUBRC = 0 .
+WA_MAIN-CARRNAME = WA_SCARR-CARRNAME .
+ENDIF.
+
+CLEAR WA_SPFLI .
+READ TABLE IT_SPFLI INTO WA_SPFLI WITH KEY CARRID = WA_MAIN-CARRID 
+                                                    CONNID = WA_MAIN-CONNID .
+
+IF SY-SUBRC = 0 .
+WA_MAIN-COUNTRYFR = WA_SPFLI-COUNTRYFR .
+WA_MAIN-COUNTRYTO  =  WA_SPFLI-COUNTRYFR .
+
+ENDIF.
+
+* تحديث القيم التي تم تعديلها لانه يقبل التعديل يدوي 
+MODIFY IT_MAIN FROM WA_MAIN INDEX INDEXLOOP .
+
+ENDLOOP.
+
+
+
+* اطبع لي القيم وحطيناها في لوب عشان ينفذها مره وحده
+
+LOOP AT IT_MAIN INTO WA_MAIN .
+WRITE: / WA_MAIN-CARRID ,
+        WA_MAIN-CARRNAME ,
+        WA_MAIN-CONNID ,
+        WA_MAIN-COUNTRYFR ,
+        WA_MAIN-COUNTRYTO ,
+        WA_MAIN-FLDATE ,
+        WA_MAIN-SEATSMAX .
+
+
+ENDLOOP.
