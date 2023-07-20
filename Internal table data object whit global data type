@@ -1,0 +1,38 @@
+*&---------------------------------------------------------------------*
+*& Report  ZABAP06
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  ZABAP06 LINE-SIZE 300 .
+
+
+** line size تستخدم للتمثيل البيانات ك جدول افضل شي كتباعد
+
+
+DATA: IT_SCARR TYPE TABLE OF SCARR ,
+           WA_Scarr LIKE LINE OF IT_SCARR .
+
+
+
+START-OF-SELECTION .
+** لاختيار الي بيظهر داخل ال fileds
+: SELECT * INTO CORRESPONDING FIELDS OF TABLE IT_SCARR
+FROM Scarr WHERE CARRID IN ('AA' , 'AC' , 'AB' , 'AF') .
+
+** شروط IF اذا كان الحقل فيه بينات يظهر ويطبع مافيه مايظهر
+
+IF IT_SCARR IS NOT INITIAL .
+
+LOOP AT IT_SCARR INTO WA_SCARR .
+** اطبع
+WRITE : / WA_SCARR-CARRID ,
+               WA_SCARR-CARRNAME ,
+               WA_SCARR-URL .
+
+ENDLOOP .
+ELSE .
+WRITE : 'Data not found' .
+ENDIF .
