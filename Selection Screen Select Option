@@ -1,0 +1,72 @@
+REPORT  ZABAP10.
+
+DATA : RESULT TYPE I ,
+       OPRT(1) TYPE C .
+* انشاءء برررراميتررر وبدء بلوك مع فريم للخيارات ونوع النص الي هو التايتل
+
+* OBLIGATORY معناها الحقل الزامي وتقدر بدونها
+* DEFULT قيمه افتراضيه بالرنامج لايمكن تغيرها
+
+SELECTION-SCREEN BEGIN OF BLOCK B1 WITH FRAME TITLE TEXT-001 .
+PARAMETERS : OP_1 TYPE I OBLIGATORY ,
+             OP_2 TYPE I OBLIGATORY .
+SELECTION-SCREEN END OF BLOCK B1 .
+
+* عمل براميتر مع الرادين بتن الخيارات
+
+SELECTION-SCREEN BEGIN OF BLOCK B2 WITH FRAME TITLE TEXT-002 .
+* الحروف للقروب ماتتعدا اربعه
+PARAMETERS : RDA_ADD RADIOBUTTON GROUP rd1 ,
+             RDA_SUB RADIOBUTTON GROUP rd1 ,
+             RDA_MUL RADIOBUTTON GROUP rd1 ,
+             RDA_DIV RADIOBUTTON GROUP rd1.
+
+SELECTION-SCREEN END OF BLOCK B2 .
+
+* عمل براميتر فيه تشك بوكس خيارات عليها صح
+
+SELECTION-SCREEN BEGIN OF BLOCK B3 WITH FRAME TITLE TEXT-003 .
+* عمل تشك بوكس فيه كلام عن طريق " هي الكومنت له
+
+PARAMETERS : CHK_OPRN AS CHECKBOX , " OPRANDS
+             CHK_OPRT AS CHECKBOX . " OPRATORS
+
+SELECTION-SCREEN END OF BLOCK B3 .
+
+
+START-OF-SELECTION .
+* العمليات
+
+IF RDA_ADD = 'X' .
+RESULT = OP_1 + OP_2 .
+OPRT = '+'.
+
+ELSEIF RDA_SUB = 'X' .
+RESULT = OP_1 - OP_2 .
+OPRT = '-'.
+
+ELSEIF RDA_MUL = 'X' .
+RESULT = OP_1 * OP_2 .
+OPRT = '*'.
+
+ELSEIF RDA_DIV = 'X' .
+RESULT = OP_1 / OP_2 .
+OPRT = '/'.
+
+
+ENDIF.
+
+* اذا التشيك بوكس اطبع كذا
+
+IF CHK_OPRN = 'X' .
+WRITE : 'OPERANDS 1 : ' , OP_1 ,
+        / 'OPERANDS 2 : ' , OP_2 .
+
+ENDIF.
+
+IF CHK_OPRT = 'X' .
+WRITE : /  'OPREATORS : ' , OPRT .
+
+ENDIF.
+
+WRITE : / 'RESULT : ' , RESULT 
