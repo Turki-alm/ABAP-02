@@ -1,12 +1,82 @@
-Q7. Configure NTP
-chrony server is "classroom.example.com"
-Classification: Public
-Q8. Configure AutoFS (NFS vers=4.0, so explicitly don't need to mention in 
-auto.map file)
--NfS vers=4.0 exports the /home/guests to your system where "X" is your station 
-number.
--ldapuser's home directory is classroom.example.com:/home/guests/ldapuserX
--ldapuser's home directory should be automounted locally beneath at 
-/home/guests/ldapuserx
--while login with any of the ldapuser then only home directory should accessible 
-from your system that ldapuser
+REDHAT Q
+
+Server a :
+
+Q1. Configure network and set the static hostname.
+ hostname = servera.lab.example.com
+ ip-address = 172.25.250.10
+ subnetmask = 255.255.255.0
+ gateway = 172.25.250.254
+ Server Name = 172.25.254.254
+
+ANS :
+[root@servera ~]# hostname
+ [root@servera ~]# hostnamectl set-hostname servera.lab.example.com
+ [root@servera ~]# ifconfig
+[root@servera ~]# nmcli connection show
+[root@servera ~]# cat /etc/resolv.conf
+[root@servera ~]# nmtui
+#change ip and host according to the question
+ #systemctl restart NetworkManager
+ #systemctl reboot
+[root@servera ~]# ifconfig
+[root@servera ~]# cat /etc/resolv.conf
+
+
+
+
+
+
+Q2. Configure YUM repository with the 2given links (BaseOs and AppStream)
+ BaseOs: http://content.example.com/rhel8.0/x86_64/dvd/BaseOS
+ AppStream: http://content.example.com/rhel8.0/x86_64/dvd/AppStream
+
+ANS :
+[root@servera ~]# yum repolist
+ No repositories available
+ [root@servera ~]# vi /etc/yum.repos.d/rhel.repo
+ [BaseOs] 
+name=BaseOs
+ baseurl=http://content.example.com/rhel8.0/x86_64/dvd/BaseOS
+ gpgcheck=0 enabled=1
+ [AppStream] 
+name=AppStream
+ baseurl=http://content.example.com/rhel8.0/x86_64/dvd/AppStream
+ gpgcheck=0
+ enabled=1
+ :wq!
+ verify:
+ [root@servera ~]# yum repolist
+
+
+
+
+
+
+
+Q2.A web server running on non standard port 82 is having issues serving content.
+ Debug and fix the issues. => The web server on your system can server all the existing HTML files from /var/www/html ( NOTE: Do not make any changes to these files ) => 
+Web service should automatically start at boot time.
+ ANS: # semanage port –l | grep http
+ # semanage port -a -t http_port_t -p tcp 82
+ # firewall-cmd --add-port=82/tcp --permanent 
+# firewall-cmd --reload 
+# systemctl restart httpd 
+# systemctl enable httpd
+ # vi /etc/httpd/conf/httpd.conf (Listen 80 change to 82) 
+# systemctl restart httpd
+ # systemctl enable httpd 
+# systemctl status httpd
+# Curl http://........com:82
+
+
+
+
+
+
+
+Q4. Create User accounts with supplementary group. 
+-group: sysadms
+ -users: natasha harry sarah (with nologin shell) -natasha and harry should be the member of sysadms group. -password for all users should be "trootent"
+
+
