@@ -1,0 +1,12 @@
+Q7. Configure NTP
+chrony server is "classroom.example.com"
+Classification: Public
+Q8. Configure AutoFS (NFS vers=4.0, so explicitly don't need to mention in 
+auto.map file)
+-NfS vers=4.0 exports the /home/guests to your system where "X" is your station 
+number.
+-ldapuser's home directory is classroom.example.com:/home/guests/ldapuserX
+-ldapuser's home directory should be automounted locally beneath at 
+/home/guests/ldapuserx
+-while login with any of the ldapuser then only home directory should accessible 
+from your system that ldapuser
