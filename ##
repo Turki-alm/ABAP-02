@@ -54,8 +54,6 @@ ANS:
 # semanage port -a -t http_port_t -p tcp 82
 # firewall-cmd --add-port=82/tcp --permanent 
 # firewall-cmd --reload 
-# systemctl restart httpd 
-# systemctl enable httpd
 # vi /etc/httpd/conf/httpd.conf (Listen 80 change to 82) 
 # systemctl restart httpd
 # systemctl enable httpd 
@@ -70,11 +68,8 @@ sarah (with nologin shell)
 -natasha and harry should be the member of sysadms group. 
 -password for all users should be "trootent"
 ANS :
-[root@servera ~]# grep "sysadmin" /etc/group
 [root@servera ~]# groupadd sysadmin
-[root@servera ~]# id harry
-[root@servera ~]# id natasha
-[root@servera ~]# id sarah
+[root@servera ~]# id harry sarah natasha
 [root@servera ~]# useradd -G sysadmin natasha
 [root@servera ~]# useradd -G sysadmin harry
 [root@servera ~]# useradd -G sysadmin -s /sbin/nologin sarah
@@ -183,7 +178,7 @@ Ans:
 question try to put same password as root)
 [alth@node1]$ wget http://domain.exam.com/rhel9/Containerfile
 [alth@node1]$ loginctl enable-linger alth
-[alth@node1]$ podman build -t monitor .
+[alth@node1]$ podman build -t monitor url 
 [alth@node1]$ podman images
 Classification: Public
 Q14. Create a rootless container :-
